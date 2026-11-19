@@ -36,6 +36,8 @@ const HUM_FAR_M = 1600;
 // A press on the replay counts as a tap, not a drag, when it moves less than this and ends sooner, in px and ms
 const TAP_MOVE_PX = 8;
 const TAP_TIME_MS = 350;
+// Time the usage hint stays on screen after the visitor reaches the replay or after the note changes, in ms
+const HINT_MS = 4000;
 // Share of the stage that must be on screen for the replay to draw and sound
 const VISIBLE_SHARE = 0.2;
 // Frame step cap, so a hidden tab does not jump the replay forward
@@ -54,6 +56,7 @@ const ui = {
   follow: document.getElementById('follow'),
   reset: document.getElementById('reset'),
   note: document.getElementById('speed-note'),
+  hint: document.getElementById('hint'),
 };
 
 /**
@@ -208,7 +211,7 @@ async function start() {
   window.addEventListener('resize', resize);
   resize();
 
-  const state = { timeS: 0, speed: START_SPEED, playing: false, started: false, following: false, visible: true };
+  const state = { timeS: 0, speed: START_SPEED, playing: false, started: false, following: false, visible: false };
   const sound = new ReplaySound();
 
   /**
@@ -355,7 +358,23 @@ async function start() {
    * @param entries - visibility change of the stage
    */
   function watchVisibility(entries) {
-    state.visible = entries[0].intersectionRatio >= VISIBLE_SHARE;
+    const visible = entries[0].intersectionRatio >= VISIBLE_SHARE;
+    if (visible && !state.visible) flashHint();
+    state.visible = visible;
+  }
+
+  let hintTimer = null;
+
+  /**
+   * @author Vinicius Trindade
+   * @date Nov 19, 2026
+   *
+   * @brief Shows the usage hint for a few seconds and lets it fade away.
+   */
+  function flashHint() {
+    ui.hint.classList.add('show');
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => ui.hint.classList.remove('show'), HINT_MS);
   }
 
   const speedTrack = createSpeedSlider(START_SPEED, setSpeed);
@@ -447,6 +466,7 @@ async function start() {
     }
     if (note !== shown.note) {
       ui.note.textContent = note;
+      if (shown.note) flashHint();
       speedTrack.classList.toggle('slowed', slowed);
       shown.note = note;
     }

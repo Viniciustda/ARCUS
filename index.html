@@ -63,7 +63,7 @@
           <svg class="icon-expand" viewBox="0 0 24 24" aria-hidden="true"><path class="stroke" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>
           <svg class="icon-shrink" viewBox="0 0 24 24" aria-hidden="true"><path class="stroke" d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"></path></svg>
         </button>
-        <p class="hint"><span>Drag to rotate · pinch to zoom</span><span id="speed-note">Zoom in on a UAV to see the messages. The replay slows down near the UAVs.</span></p>
+        <p class="hint" id="hint"><span>Drag to rotate · pinch to zoom</span><span id="speed-note">Zoom in on a UAV to see the messages. The replay slows down near the UAVs.</span></p>
       </div>
       <div class="replay-bar">
       <div class="controls" role="group" aria-label="Replay controls">
@@ -90,13 +90,16 @@
         <button type="button" id="reset">Reset view</button>
       </div>
       <ul class="legend">
+        <li><span class="line honest"></span>SYNC</li>
+        <li><span class="line forged"></span>forged SYNC</li>
         <li><span class="dot honest"></span>UAV</li>
         <li><span class="dot attacker"></span>attacker</li>
         <li><span class="dot blocked"></span>UAV that blocked the attacker</li>
-        <li><span class="line honest"></span>SYNC</li>
-        <li><span class="line forged"></span>forged SYNC</li>
       </ul>
       </div>
+      <button type="button" class="bar-toggle" id="bar-toggle" aria-expanded="true" aria-label="Hide the controls">
+        <svg viewBox="0 0 32 16" aria-hidden="true"><path d="M4 12 16 5l12 7"></path></svg>
+      </button>
       </div>
     </div>
   </section>

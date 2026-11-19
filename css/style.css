@@ -251,7 +251,11 @@ a { color: var(--blue); }
   font-size: 0.8rem;
   color: var(--muted);
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease;
 }
+
+.hint.show { opacity: 1; }
 
 .controls {
   display: flex;
@@ -380,8 +384,11 @@ a { color: var(--blue); }
 .key-suspect { width: 22px; border-top: 3px dashed var(--blue); }
 .key-block { width: 14px; height: 14px; border: 2px solid var(--green); border-radius: 50%; background: linear-gradient(135deg, transparent 44%, var(--green) 44% 56%, transparent 56%); }
 
-/* Full screen: the replay fills the screen and the controls and legend sit in a slim bar on top */
+/* Full screen: the replay fills the screen, the controls sit in a bar on top that folds away with a wide V,
+   and the legend sits in a small box on the left, above the time and the block count */
 html.replay-full, html.replay-full body { overflow: hidden; }
+
+.bar-toggle { display: none; }
 
 .replay-box.full {
   position: fixed;
@@ -399,29 +406,79 @@ html.replay-full, html.replay-full body { overflow: hidden; }
   border-radius: 0;
 }
 
-.replay-box.full .replay-bar {
+.replay-box.full .replay-bar { display: contents; }
+
+.replay-box.full .controls {
   position: absolute;
   top: calc(env(safe-area-inset-top, 0px) + 8px);
   left: 8px;
   right: 8px;
   z-index: 3;
-  padding: 6px 10px;
+  margin: 0;
+  padding: 6px 10px 14px;
+  gap: 6px;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: color-mix(in srgb, var(--bg) 82%, transparent);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.replay-box.full .controls { margin-top: 0; gap: 6px; }
 .replay-box.full .controls button { min-height: 36px; padding: 4px 12px; font-size: 0.85rem; }
 .replay-box.full .icon-button { width: 36px; }
 .replay-box.full .icon-button svg { width: 17px; height: 17px; }
 .replay-box.full .speed-track { padding: 18px 0 4px; }
 .replay-box.full .speed-ticks { display: none; }
-.replay-box.full .legend { margin-top: 4px; gap: 2px 12px; font-size: 0.75rem; }
-.replay-box.full .legend .dot { width: 9px; height: 9px; }
-.replay-box.full .hud { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); }
+
+.replay-box.full .bar-toggle {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + 8px + var(--bar-height, 0px));
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 22px;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.bar-toggle svg { width: 30px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; transition: transform 0.3s ease; }
+
+.replay-box.full.bar-closed .controls { transform: translateY(calc(-100% - 20px)); opacity: 0; pointer-events: none; }
+.replay-box.full.bar-closed .bar-toggle { top: calc(env(safe-area-inset-top, 0px) + 20px); }
+.replay-box.full.bar-closed .bar-toggle svg { transform: rotate(180deg); }
+
+.replay-box.full .legend {
+  position: absolute;
+  left: 10px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 58px);
+  z-index: 3;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  max-width: min(46vw, 240px);
+  margin: 0;
+  padding: 6px 10px;
+  gap: 3px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font-size: 0.72rem;
+}
+
+.replay-box.full .legend li { align-items: flex-start; line-height: 1.25; }
+.replay-box.full .legend .dot, .replay-box.full .legend .line { flex: none; margin-top: 3px; }
+.replay-box.full .legend .dot { width: 9px; height: 9px; margin-left: 3.5px; margin-right: 3.5px; }
+.replay-box.full .legend .line { width: 16px; }
+.replay-box.full .hud { top: auto; left: 12px; bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); font-size: 0.8rem; }
 .replay-box.full .hint { display: none; }
 .replay-box.full .stage-corner { right: calc(env(safe-area-inset-right, 0px) + 14px); bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); }
 
