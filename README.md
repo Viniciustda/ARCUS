@@ -18,6 +18,7 @@ and of the defence, and links to a short anonymous feedback form.
 | `js/sections.js` | Chooses how firmly the scroll stops on each section and marks the section on screen. |
 | `js/replay.js` | Builds the 3D scene, plays the run and handles the camera, the start tap, play, restart, mute and the follow mode. |
 | `js/fullscreen.js` | Full screen mode of the replay, with its controls and legend in a bar on top. |
+| `js/legend-corner.js` | Lets the visitor drag the full screen legend to any of the four corners. |
 | `js/replay-sound.js` | Sounds of the replay made with Web Audio: rotor hum, honest and forged SYNC, and blocks. |
 | `js/speed-slider.js` | Speed slider from 1x to 100x, stopping at 10x, 20x and 60x while dragging. |
 | `js/replay-data.js` | Loads the run files and gives the position of a UAV and the messages at a time. |

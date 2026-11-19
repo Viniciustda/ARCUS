@@ -457,9 +457,11 @@ html.replay-full, html.replay-full body { overflow: hidden; }
 
 .replay-box.full .legend {
   position: absolute;
-  left: 10px;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 58px);
   z-index: 3;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: top 0.3s ease;
   flex-direction: column;
   flex-wrap: nowrap;
   max-width: min(46vw, 240px);
@@ -473,6 +475,16 @@ html.replay-full, html.replay-full body { overflow: hidden; }
   backdrop-filter: blur(8px);
   font-size: 0.72rem;
 }
+
+.replay-box.full .legend.dragging { cursor: grabbing; box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.35); transition: none; }
+
+/* Corners of the legend: bottom ones above the time and the full screen button, top ones under the open bar */
+.replay-box.full[data-legend-corner="bl"] .legend { left: 10px; bottom: calc(env(safe-area-inset-bottom, 0px) + 58px); }
+.replay-box.full[data-legend-corner="br"] .legend { right: 10px; bottom: calc(env(safe-area-inset-bottom, 0px) + 70px); }
+.replay-box.full[data-legend-corner="tl"] .legend { left: 10px; top: calc(env(safe-area-inset-top, 0px) + 28px + var(--bar-height, 0px)); }
+.replay-box.full[data-legend-corner="tr"] .legend { right: 10px; top: calc(env(safe-area-inset-top, 0px) + 28px + var(--bar-height, 0px)); }
+.replay-box.full.bar-closed[data-legend-corner="tl"] .legend,
+.replay-box.full.bar-closed[data-legend-corner="tr"] .legend { top: calc(env(safe-area-inset-top, 0px) + 10px); }
 
 .replay-box.full .legend li { align-items: flex-start; line-height: 1.25; }
 .replay-box.full .legend .dot, .replay-box.full .legend .line { flex: none; margin-top: 3px; }
