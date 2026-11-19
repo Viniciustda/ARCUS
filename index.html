@@ -1,0 +1,160 @@
+<!doctype html>
+<!--
+  index.html: the companion page of the ARCUS poster, with the 3D replay, the animated steps and the feedback form.
+  Author: Vinicius Trindade
+  Date:   Nov 19, 2026
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ARCUS</title>
+<meta name="description" content="3D replay of an ns-3 simulation where UAVs defend their clock consensus from a man-in-the-middle attacker with ARCUS.">
+<link rel="icon" href="assets/drones/honest_1.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  // Applies the saved theme before the first paint
+  try { const saved = localStorage.getItem('theme'); if (saved) document.documentElement.dataset.theme = saved; } catch (e) {}
+</script>
+<script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  } }
+</script>
+</head>
+<body>
+<button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch light and dark mode">
+  <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"></path></svg>
+  <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"></circle><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"></path></svg>
+</button>
+
+<main>
+  <section class="panel" aria-labelledby="replay-title">
+    <div class="panel-inner">
+      <header class="masthead">
+        <p class="course">Projeto Orientado em Computação&nbsp;I · DCC UFMG</p>
+        <h1><span>Resilient Local Consensus in UAV Networks</span> <span>Against Man-in-the-Middle Attacks with MARL</span></h1>
+        <p class="authors">Vinicius Trindade Dias Abel · Advisor: Prof. Aldri Luiz dos Santos</p>
+      </header>
+
+      <div class="section-head">
+        <p class="eyebrow">01 · Simulation</p>
+        <h2 id="replay-title"><span class="brand">ARCUS</span> in one simulation</h2>
+      </div>
+      <p class="lead">40 UAVs fly over 1.5 × 1.5 km for 1200 s. One of them, in red, forges clock messages. Every UAV runs ARCUS and turns blue when it blocks the attacker.</p>
+      <div class="stage" id="stage">
+        <canvas id="replay" aria-label="3D replay of the simulation"></canvas>
+        <div class="stage-loading" id="stage-loading">Loading the simulation…</div>
+        <button type="button" class="stage-start" id="start" hidden>
+          <span class="start-circle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5Z"></path></svg></span>
+          <span class="start-title">Start the simulation</span>
+          <span class="start-sub">with sound · tap the speaker to mute</span>
+        </button>
+        <div class="hud">
+          <span id="clock">t = 0 s</span>
+          <span id="blocked">0 of 39 UAVs blocked the attacker</span>
+        </div>
+        <p class="hint"><span>Drag to rotate · pinch to zoom</span><span id="speed-note">Zoom in on a UAV to see the messages. The replay slows down near the UAVs.</span></p>
+      </div>
+      <div class="controls" role="group" aria-label="Replay controls">
+        <button type="button" class="icon-button paused" id="play" aria-label="Play">
+          <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>
+          <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5Z"></path></svg>
+        </button>
+        <button type="button" class="icon-button" id="restart" aria-label="Restart the simulation">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path class="stroke" d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"></path><path d="M4 3.5v5h5Z"></path></svg>
+        </button>
+        <button type="button" class="icon-button" id="sound" aria-label="Mute" aria-pressed="false">
+          <svg class="icon-sound" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z"></path><path class="stroke" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"></path></svg>
+          <svg class="icon-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z"></path><path class="stroke" d="M16 9.5l5 5M21 9.5l-5 5"></path></svg>
+        </button>
+        <div class="speed-control">
+          <label class="speed-label" for="speed-range">Speed</label>
+          <div class="speed-track" id="speed-track">
+            <output class="speed-bubble" id="speed-value" for="speed-range">20×</output>
+            <input type="range" id="speed-range" step="1">
+            <div class="speed-ticks" id="speed-ticks" aria-hidden="true"></div>
+          </div>
+        </div>
+        <button type="button" id="follow" aria-pressed="false">Follow the attacker</button>
+        <button type="button" id="reset">Reset view</button>
+      </div>
+      <ul class="legend">
+        <li><span class="dot honest"></span>UAV</li>
+        <li><span class="dot attacker"></span>attacker</li>
+        <li><span class="dot blocked"></span>UAV that blocked the attacker</li>
+        <li><span class="line honest"></span>SYNC</li>
+        <li><span class="line forged"></span>forged SYNC</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="steps-title">
+    <div class="panel-inner">
+      <div class="section-head">
+        <p class="eyebrow">02 · How it works</p>
+        <h2 id="steps-title">Step by step</h2>
+      </div>
+      <div class="story-stage">
+        <svg id="story" viewBox="0 0 800 500" role="img" aria-label="A swarm of seven UAVs that exchange clock messages, with an attacker M in the middle"></svg>
+      </div>
+      <nav class="story-steps" id="story-steps" aria-label="Steps"></nav>
+      <div class="story-caption" id="story-caption" aria-live="off">
+        <h3 id="story-title"></h3>
+        <p id="story-text"></p>
+      </div>
+      <div class="controls" role="group" aria-label="Step controls">
+        <button type="button" id="story-prev">Previous</button>
+        <button type="button" id="story-play">Pause</button>
+        <button type="button" id="story-next">Next</button>
+      </div>
+      <p class="story-note">Each label shows how far a clock is from the mean of the group.</p>
+      <ul class="legend">
+        <li><span class="dot sync"></span>SYNC</li>
+        <li><span class="dot forged"></span>forged SYNC</li>
+        <li><span class="badge-key good"></span>group in sync: clocks within 1 ms</li>
+        <li><span class="badge-key bad"></span>group out of sync</li>
+        <li><span class="key-drop"></span>dropped</li>
+        <li><span class="key-suspect"></span>suspicion</li>
+        <li><span class="key-block"></span>blocked</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel form-panel" aria-labelledby="form-title">
+    <div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="panel-inner form-inner">
+      <div class="form-frame">
+        <div class="form-card">
+          <div class="section-head centred">
+            <p class="eyebrow">03 · Your turn</p>
+            <h2 id="form-title">Your feedback matters</h2>
+          </div>
+          <p class="form-text">A short and objective form about this presentation. It is anonymous and only helps me improve the next stage of the work (POC II).</p>
+          <ul class="form-points">
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path class="stroke" d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Anonymous</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle class="stroke" cx="12" cy="13" r="7.5"></circle><path class="stroke" d="M12 9v4l2.5 2M9.5 2.5h5"></path></svg>Short</li>
+            <li><svg viewBox="0 0 24 24" aria-hidden="true"><path class="stroke" d="M5 19 19 5M10 5h9v9"></path></svg>Shapes POC II</li>
+          </ul>
+          <a class="form-link" id="form-link" aria-disabled="true">Form coming soon</a>
+        </div>
+      </div>
+      <footer class="footer">
+        <p>Developed by Vinicius Trindade Dias Abel, advised by Prof. Aldri Luiz dos Santos, DCC UFMG.</p>
+        <p>Simulated in ns-3. Drone icons from <a href="https://www.flaticon.com">Flaticon</a>.</p>
+        <p>© 2026 Vinicius Trindade Dias Abel. All rights reserved.</p>
+      </footer>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="js/theme.js"></script>
+<script type="module" src="js/sections.js"></script>
+<script type="module" src="js/steps.js"></script>
+<script type="module" src="js/replay.js"></script>
+</body>
+</html>
