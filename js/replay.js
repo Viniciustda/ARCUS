@@ -33,6 +33,9 @@ const FOLLOW_BREAK_M = 40;
 // Camera distances between which the rotor hum goes from loud to soft, in metres
 const HUM_NEAR_M = 150;
 const HUM_FAR_M = 1600;
+// A press on the replay counts as a tap, not a drag, when it moves less than this and ends sooner, in px and ms
+const TAP_MOVE_PX = 8;
+const TAP_TIME_MS = 350;
 // Share of the stage that must be on screen for the replay to draw and sound
 const VISIBLE_SHARE = 0.2;
 // Frame step cap, so a hidden tab does not jump the replay forward
@@ -356,6 +359,49 @@ async function start() {
   }
 
   const speedTrack = createSpeedSlider(START_SPEED, setSpeed);
+  const press = { x: 0, y: 0, time: 0, pointers: 0 };
+
+  /**
+   * @author Vinicius Trindade
+   * @date Nov 19, 2026
+   *
+   * @brief Notes where and when a press on the replay began.
+   *
+   * @param event - pointer pressed on the canvas
+   */
+  function pressStart(event) {
+    press.pointers += 1;
+    Object.assign(press, { x: event.clientX, y: event.clientY, time: event.timeStamp });
+  }
+
+  /**
+   * @author Vinicius Trindade
+   * @date Nov 19, 2026
+   *
+   * @brief Pauses or resumes the replay when a press was a short tap with one finger, and not a drag or a pinch.
+   *
+   * @param event - pointer released on the canvas
+   */
+  function pressEnd(event) {
+    const single = press.pointers === 1;
+    press.pointers = Math.max(0, press.pointers - 1);
+    const moved = Math.hypot(event.clientX - press.x, event.clientY - press.y);
+    if (single && moved < TAP_MOVE_PX && event.timeStamp - press.time < TAP_TIME_MS) togglePlay();
+  }
+
+  /**
+   * @author Vinicius Trindade
+   * @date Nov 19, 2026
+   *
+   * @brief Forgets the presses when the browser takes over the gesture.
+   */
+  function pressCancel() {
+    press.pointers = 0;
+  }
+
+  canvas.addEventListener('pointerdown', pressStart);
+  canvas.addEventListener('pointerup', pressEnd);
+  canvas.addEventListener('pointercancel', pressCancel);
   ui.play.addEventListener('click', togglePlay);
   ui.start.addEventListener('click', startReplay);
   ui.sound.addEventListener('click', toggleSound);
