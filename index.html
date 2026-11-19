@@ -46,6 +46,11 @@
         <h2 id="replay-title"><span class="brand">ARCUS</span> in one simulation</h2>
       </div>
       <p class="lead">40 UAVs fly over 1.5 × 1.5 km for 1200 s. One of them, in red, forges clock messages. Every UAV runs ARCUS and turns blue when it blocks the attacker.</p>
+      <div class="scenario">
+        <span class="scenario-label">Possible scenarios</span>
+        <span class="scenario-chip">Search and rescue over a large area</span>
+        <span class="scenario-chip">Surveillance and patrol of a large area</span>
+      </div>
       <div class="replay-box" id="replay-box">
       <div class="stage" id="stage">
         <canvas id="replay" aria-label="3D replay of the simulation"></canvas>
@@ -101,6 +106,7 @@
         <svg viewBox="0 0 32 16" aria-hidden="true"><path d="M4 12 16 5l12 7"></path></svg>
       </button>
       </div>
+      <p class="scale-note">The UAVs move with the Gauss-Markov mobility model, at 10 to 20 m/s and 61 to 91 m high, over an area of 1.5 × 1.5 km. To stay visible, they are drawn out of scale.</p>
     </div>
   </section>
 

@@ -170,7 +170,12 @@ a { color: var(--blue); }
 
 .section-head.centred h2 { background-position: bottom center; }
 .brand { color: var(--blue); }
-.lead { margin: 6px 0 16px; color: var(--muted); }
+.lead { margin: 6px 0 12px; color: var(--muted); }
+
+.scenario { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0 0 12px; }
+.scenario-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.scenario-chip { padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 0.88rem; font-weight: 700; }
+.scale-note { margin: 10px 0 0; font-size: 0.82rem; color: var(--muted); }
 
 .stage {
   position: relative;
